@@ -1,0 +1,8 @@
+Internet Connection: Dynamic IP (DHCP) 
+
+Network Name (SSID):dlink
+Security:WPA/WPA2
+Wlan Password:9025832492
+
+Username:admin
+Password:9025832492
