@@ -1,0 +1,1524 @@
+mmcore.SetCookie('mmid','-2065885423|AQAAAArJvT8yNwwAAA==',365,1);mmcore.SetCookie('pd','886095589|AQAAAAoBQsm9PzI3DNGvmiwBAIWvB7oeldJIDwAAAIWvB7oeldJIAAAAAAEAAAD/////AA53d3cuZ29vZ2xlLmNvbQQ3DAEAAAAAAAAAAQAA////////////////AgDeOgAAABJfVls3DAD/////ATcMNwz//wEAAAEAAAAAAXaTAADt6AAAAHY3AAAAnhuEqzcMAP////8BNww3DP//AQAAAQAAAAABA4wAAHbcAAAAAAAAAUU=',365);mmcore.SetCookie('srv','nycvwcgus07',365);(function(){if(typeof(mmcore.GenInfo)!='object')mmcore.GenInfo={};mmcore.EH=function(e){var s=e.message+'\r\n';if(!window.mm_error)window.mm_error=s;else window.mm_error+=s;};
+mmcore.GenInfo['Newsletters_Global_Nav_v2']={'element15070':'newsletters in nav v2'};
+mmcore.GenInfo['T06_Master_MdotRedirect']={'element1':'Default'};
+var tc={'Element15070':{'h':[],'c':[],'l':[]}}
+try{
+(function () {
+	mmcore.snippets = mmcore.snippets || {};
+	mmcore.snippets.EventManager = function () {
+		var eventPool = {};
+		var eventListeners = {};
+		this.trigger = function (event_type, event_data, callback) {
+			eventPool[event_type] = {
+				event_data: event_data,
+				callback: callback
+			};
+			eventListeners[event_type] = eventListeners[event_type] || [];
+			for (var i = 0; i < eventListeners[event_type].length; i++) {
+				try {
+					eventListeners[event_type][i](event_data);
+				} catch (e) {
+					mmcore.EH && mmcore.EH(e);
+				}
+			}
+			callback && callback();
+		};
+		this.on = function (event_type, callback) {
+			var lastData = eventPool[event_type];
+			if (lastData) {
+				try {
+					callback(lastData.event_data);
+				} catch (e) {
+					mmcore.EH && mmcore.EH(e);
+				}
+				setTimeout(function () {
+					lastData.callback && lastData.callback();
+					lastData.callback = null;
+				}, 0);
+			}
+			eventListeners[event_type] = eventListeners[event_type] || [];
+			eventListeners[event_type].push(callback);
+		};
+	};
+	mmcore.snippets.EventManager.call(mmcore);
+}());
+}catch(err){mmcore.EH(err);}
+try{
+(function(){
+	mmcore.snippets = mmcore.snippets || {};
+	mmcore.snippets.Style = function (css) {
+		var doc = document, st = doc.createElement("style");
+		st.type = "text/css";
+		st.media = "screen";
+		function attach(css) {
+			if (st && css) {
+				if (st.styleSheet) {
+					st.styleSheet.cssText += css;
+				} else {
+					st.innerHTML += css;
+				}
+			}
+		}
+
+		function detach() {
+			st && st.parentNode.removeChild(st);
+			st = null;
+		}
+
+		attach(css);
+		var mm = doc.getElementById(mmcore.cprefix + 1);
+		mm.parentNode.insertBefore(st, mm);
+		return {
+			attach: attach,
+			detach: detach
+		}
+	}
+}());
+}catch(err){mmcore.EH(err);}
+try{
+;(function () {
+	function bind(el, func) {
+		if (el.addEventListener) {
+			el.addEventListener('beforeprint', func, false);
+		} else if (el.attachEvent) {
+			el.attachEvent('onbeforeprint', func);
+		}
+	}
+
+	if ((/msie|Trident/i).test(navigator.userAgent)) {
+		bind(window, function () {
+			var nodes = document.getElementsByTagName('script');
+			for (var i = nodes.length; i--;) {
+				if ((nodes[i].id || '').match(mmcore.cprefix))
+					nodes[i].removeAttribute('src');
+			}
+		});
+	}
+})();
+}catch(err){mmcore.EH(err);}
+try{
+(function () {
+	// configuration:
+	var defaultAccount = 'rdirdallrecipes',
+		defaultParams = ['prop40', 'eVar22'];
+
+	// arguments:
+	// campaign = string with the full name of the campaign
+	//            OR an object with campaign info in this format:
+	//            { "CampaignName" : { "element": "variant", "element": "variant" } }
+	// params = array of evar/prop parameters to pass (optional)
+	// account = track to a different omniture account (optional)
+	mmcore.omniture = function (campaign, params, account) {
+		var trackAction = function () {
+			if (!window.s_gi) return mmcore.EH({message: "Omniture function is missing. s_gi not found."});
+			if (typeof campaign == 'string') {
+				var GI = mmcore.GenInfo[campaign];
+				if (!GI) return mmcore.EH({message: "Omniture function called for non-existant campaign."});
+			} else if (campaign) {
+				var i;
+				for (i in campaign)
+					var GI = campaign[i];
+				campaign = i;
+				if (!i || !GI) return mmcore.EH({message: "Omniture function called for invalid campaign format."});
+			} else {
+				return mmcore.EH({message: "Omniture function called without campaign."});
+			}
+
+			var output = [];
+			params = params || defaultParams;
+			account = account || defaultAccount;
+
+			for (var key in GI)
+				output.push(key + '_' + (GI[key] + '').toLowerCase().substr(0, 3));
+			output.sort();
+			output = campaign.toLowerCase().replace(/\s/g, '') + ':' + output.join('|');
+
+			var s = s_gi(account);
+			s.linkTrackVars = params.join(',');
+			for (var i = params.length; i--;)
+				s[params[i]] = output;
+
+			s.tl(true, 'o', 'Maxymiser Generation');
+
+		};
+		mmcore.AddDocLoadHandler(function () {
+			var waiter = function () {
+				if (window.s_gi) {
+					trackAction();
+				} else {
+					setTimeout(waiter, 50);
+				}
+			};
+			waiter();
+		});
+	};
+})();
+
+
+
+}catch(err){mmcore.EH(err);}
+try{
+// rewrited 22.06.2015 by Maksym Mokrozub for AR PC Creation
+;(function() {
+	var extend = function(target, source) {
+		for (var key in source) {
+			target[key] = source[key];
+		}
+	};
+
+	var Storage = function(name) {
+		var get = function() {
+			var cookie = mmcore.GetCookie(name, true) || 'null';
+			var out;
+			try {
+				out = JSON.parse(cookie);
+			} catch (err) {
+				mmcore.EH(new Error('Storage get: ' + err));
+			}
+			return out;
+		};
+		var set = function(data) {
+			try {
+				mmcore.SetCookie(name, JSON.stringify(data), 365, true);
+			} catch (err) {
+				mmcore.EH(new Error('Storage set: ' + err));
+			}
+			delete mmcore._vars[name];
+		};
+
+		return {
+			'get': get,
+			'set': set
+		};
+	};
+
+	var STORAGE_COOKIE = 'mm_criteria';
+	var storage = Storage(STORAGE_COOKIE);
+
+	return function(defaultCriteria, getCriteria, watchMobileCriteria) {
+		//Init Criteria
+		mmcore.persCriteria = defaultCriteria;
+		//restore all criteria from cookie, if it exists
+		extend(mmcore.persCriteria, storage.get());
+
+		//restore PC after CGRequest
+		mmcore._Clear = (function(fn) {
+			return function() {
+				var out = fn.apply(this, arguments);
+				if (mmcore._docEnd) {
+					initCriteria();
+				}
+				return out;
+			};
+		}(mmcore._Clear));
+
+		var initCriteria = mmcore._initCriteria = function() {
+			try {
+				getCriteria(mmcore.persCriteria);
+			} catch (err) {
+				mmcore.EH(new Error('getCriteria(): ' + err));
+			}
+			//save to cookie
+			storage.set(mmcore.persCriteria);
+			// set pers ctriteria
+			for (var key in mmcore.persCriteria) {
+				mmcore.SetPersCriterion(key, mmcore.persCriteria[key]);
+			}
+		};
+
+		initCriteria();
+
+		var isMobile = (location.hostname == 'm.allrecipes.com');
+		(function() {
+			var times = 200;
+			(function waitForGlobals() {
+				if ((window.AR && !isMobile) || (window.dataLayer && isMobile) || !times--) {
+					initCriteria();
+				} else {
+					setTimeout(waitForGlobals, 20);
+				}
+			})();
+		})();
+
+		if (isMobile) {
+			mmcore.AddDocLoadHandler(function() {
+				if (typeof window.jQuery === 'function' && window.angular) {
+					watchMobileCriteria();
+				}
+			});
+		}
+	};
+})()({
+	'UserStatus': '',
+	'DeviceType': '',
+	'VideoAffinity': 0,
+	'SaveToFave': 0,
+	'Rates': 0,
+	'Reviews': 0,
+	'UploadPhoto': 0,
+	'Social': 0,
+	'Email': 0,
+	'Print': 0,
+	'ListAdd': 0,
+	'MadeIt': 0,
+	'FollowACook': 0
+}, function(criteria) {
+	// UserStatus PC
+	criteria.UserStatus = (function(pc) {
+		var isMobile = (location.hostname == 'm.allrecipes.com');
+		if (isMobile) {
+			var status;
+			try {
+				status = window.dataLayer.user[0].segment.adStatus.toLowerCase();
+			} catch (e) {
+				mmcore.EH(e);
+			}
+			if (status !== undefined) {
+				var adStatus = {
+					'freeloggedin': 'FreeMemLogIn',
+					'freeloggedout': 'FreeMemLogOut',
+					'supportingloggedin': 'ProMemLogIn',
+					'supportingloggedout': 'ProMemLogOut'
+				};
+				pc = adStatus[status] || 'NonMember';
+			}
+		} else {
+			var data;
+			try {
+				data = window.AR.VisitorInfo._data;
+			} catch (e) {
+				mmcore.EH(e);
+			}
+			if (data) {
+				if (data._isRecognized) {
+					if (data._isSupportingMember) {
+						if (data._isLoggedIn) {
+							pc = 'ProMemLogIn';
+						} else {
+							pc = 'ProMemLogOut';
+						}
+					} else {
+						if (data._isLoggedIn) {
+							pc = 'FreeMemLogIn';
+						} else {
+							pc = 'FreeMemLogOut';
+						}
+					}
+				} else {
+					pc = 'NonMember';
+				}
+			}
+		}
+		return pc;
+	}(criteria.UserStatus));
+
+	// DeviceType PC
+	criteria.DeviceType = (function(pc) {
+		var ua = navigator.userAgent.toLowerCase();
+		if (/iphone|ipod/.test(ua) || (/android/.test(ua) && /mobile/.test(ua))) {
+			pc = 'Mobile';
+		} else if ((/ipad/.test(ua) && /webkit/.test(ua)) || (/android/.test(ua) && !/mobile/.test(ua)) || /playbook/.test(ua) || (/silk/.test(ua) && /webkit/.test(ua))) {
+			pc = 'Tablet';
+		} else {
+			pc = 'Desktop';
+		}
+		return pc;
+	}(criteria.DeviceType));
+
+	var extend = function(target, source) {
+		for (var key in source) {
+			target[key] = source[key];
+		}
+	};
+
+	// VideoAffinity, SaveToFave, Rates, Reviews, UploadPhoto, Social, Email, Print, ListAdd, MadeIt, FollowACook PCs
+	var parseBehaviorVal = function(name, val, arr) {
+		var result = String(val); // 0 or 1 or text
+		val = Number(val);
+		if (val > 1) { // 2 or more
+			switch (name) {
+				case 'VideoAffinity':
+				case 'UploadPhoto':
+					if (val > 9) {
+						result = '10+';
+					} else if (val > 4) {
+						result = '5-9';
+					} else {
+						result = '2-4';
+					}
+					break;
+				case 'SaveToFave':
+				case 'Rates':
+				case 'Reviews':
+				case 'Print':
+				case 'MadeIt':
+				case 'FollowACook':
+					if (val > 50) {
+						result = '51+';
+					} else if (val > 10) {
+						result = '11-50';
+					} else {
+						result = '2-10';
+					}
+					break;
+				case 'Social':
+				case 'Email':
+				case 'ListAdd':
+					if (val > 9) {
+						result = '10+';
+					} else {
+						result = '2-9';
+					}
+					break;
+			}
+		}
+		if (name == 'SaveToFave') {
+			result += arr[arr.length - 1];
+		}
+		return result;
+	};
+
+	var savedBehavior = (function() {
+		var names = ['VideoAffinity', 'SaveToFave', 'Rates', 'Reviews', 'UploadPhoto', 'Social', 'Email', 'Print', 'ListAdd', 'MadeIt', 'FollowACook'];
+		var obj = {};
+		var data = (function() {
+			var str = mmcore.GetCookie('mm_behavior', true);
+			var arr = str.split(';');
+			if (str && arr.length > 2) {
+				return arr;
+			} else {
+				return [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ''];
+			}
+		})();
+		data.forEach(function(val, i, arr) {
+			if (i < arr.length - 1) {
+				var key = names[i];
+				obj[key] = parseBehaviorVal(key, val, arr);
+			}
+		});
+		return obj;
+	})();
+
+	extend(criteria, savedBehavior);
+}, function() {
+	var Behavior = function(name) {
+		var data = [];
+		var incKeys = [];
+		var incMult = function(key) {
+			var i = match(key);
+			data[i] = Number(data[i]) + 1;
+			if (key == 'SaveToFave') {
+				setZone();
+			}
+			save();
+		};
+		var setZone = function() {
+			var dl = window.dataLayer;
+			var zone = dl && dl.page && dl.page.category && dl.page.category.adZone && dl.page.category.adZone.match(/\b\w*$/)[0];
+			if (zone) {
+				data[data.length - 1] = ':' + zone;
+			}
+		};
+		var inc = function(key) {
+			if (!inArray(key, incKeys)) {
+				incKeys.push(key);
+				incMult(key);
+			}
+		};
+		var match = function(key) {
+			var obj = {
+				'VideoAffinity': 0,
+				'SaveToFave': 1,
+				'Rates': 2,
+				'Reviews': 3,
+				'UploadPhoto': 4,
+				'Social': 5,
+				'Email': 6,
+				'Print': 7,
+				'ListAdd': 8,
+				'MadeIt': 9,
+				'FollowACook': 10
+			};
+			return obj[key];
+		};
+		var save = function() {
+			mmcore.SetCookie(name, data.join(';'), 365, true);
+		};
+		var inArray = function(el, arr) {
+			var i = arr.length;
+			while (i--) {
+				if (arr[i] == el) {
+					return true;
+				}
+			}
+			return false;
+		};
+		var init = function() {
+			var str = mmcore.GetCookie(name, true);
+			var arr = str.split(';');
+			if (str && arr.length > 2) {
+				data = arr;
+			} else {
+				data = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ''];
+			}
+		};
+		init();
+
+		return {
+			'incMult': incMult,
+			'inc': inc
+		};
+	};
+
+	var behavior = Behavior('mm_behavior');
+
+	// VideoAffinity PC
+	if (/^\/video/.test(location.pathname)) {
+		var IS_NOT_RELOAD = (function() {
+			window.onunload = function(original) {
+				return function() {
+					mmcore.SetCookie('mm_pathname', encodeURIComponent(location.pathname), 0, true);
+					if (typeof original === 'function') {
+						return original.apply(this, arguments);
+					}
+				};
+			}(window.onunload);
+
+			var savedPathname = mmcore.GetCookie('mm_pathname', true);
+			if (location.pathname == decodeURIComponent(savedPathname)) {
+				return false;
+			} else {
+				if (savedPathname) {
+					mmcore.SetCookie('mm_pathname', '', -1, true);
+				}
+				return true;
+			}
+		})();
+		if (IS_NOT_RELOAD) {
+			behavior.inc('VideoAffinity');
+		}
+	}
+
+	// Social PC
+	jQuery(document).one('click', '.recipe-share.share-container a:not(.email), .made-it-facebook a', function() {
+		behavior.inc('Social');
+	});
+
+	// Print PC
+	jQuery(document).one('click', "[href*='print']", function() {
+		behavior.inc('Print');
+	});
+
+	// Rates PC
+	var notReviews = true;
+	angular.element('body').scope().$on('onReviewSaved', function(obj, res) {
+		if (Boolean(res) === true) {
+			if (notReviews) {
+				behavior.inc('Rates');
+			}
+			notReviews = true;
+		}
+	});
+
+	// Reviews, UploadPhoto, Email, ListAdd, PCs
+	angular.element('body').scope().$on('notify', function(obj, msg, thing, res) {
+		if (res == 'success') {
+			// moved to pubsub. remove if changes
+			//if (/recipe saved/i.test(msg)) {
+			//	behavior.incMult('SaveToFave');
+			//} else
+			if (/review saved/i.test(msg)) {
+				behavior.inc('Reviews');
+				notReviews = false;
+			} else if (/photo added/i.test(msg)) {
+				behavior.incMult('UploadPhoto');
+			} else if (/thanks for sharing/i.test(msg)) {
+				behavior.inc('Email');
+			} else if (/added to shopping list|shopping list saved/i.test(msg)) {
+				behavior.inc('ListAdd');
+			}
+			// moved to pubsub. remove if changes
+			//else if (/congrats on making this recipe/i.test(msg)) {
+			//	behavior.inc('MadeIt');
+			//}
+		}
+	});
+
+	// FollowACook PC. For now it works on cookFollowRemove, check it if changes
+	angular.element('body').scope().$on('cookFollowRemove', function() {
+		behavior.incMult('FollowACook');
+	});
+
+	// SaveToFave
+	window.pubsub.listen('Recipe.OpenCollectionModal', 'mm', function(obj) {
+		behavior.incMult('SaveToFave');
+	});
+
+	// MadeIt
+	window.pubsub.listen('IMadeIt', 'mm', function(obj) {
+		behavior.inc('MadeIt');
+	});
+
+});
+
+}catch(err){mmcore.EH(err);}
+try{
+mmcore.AddDocLoadHandler(function () {
+	var request = function (callback) {
+		var isExecuted = false;
+		var callbackExecutor = function () {
+			if (!isExecuted) {
+				isExecuted = true;
+				callback();
+			}
+
+		};
+		setTimeout(callbackExecutor, 2000);
+		mmcore._async = true;
+		mmcore.SetPageID('mmevents');
+		mmcore.CGRequest(callbackExecutor);
+	};
+	if(document.querySelector('.toprightmerch > a > img') && window.jQuery){
+		$('.toprightmerch > a > img').closest('.toprightmerch').on('click', 'a', function(){
+			var targetLink = this;
+			mmcore.SetAction('LozengeClicks', 1, '');
+			request(function () {
+				if(/Firefox/.test(navigator.userAgent)){
+					window.location.hash = "#"
+				}
+				window.location = targetLink.href;
+			});
+			return false;
+		});
+
+	}
+});
+}catch(err){mmcore.EH(err);}
+try{
+mmcore.AddDocLoadHandler(function() {
+	var request = function() {
+		mmcore._async = true;
+		mmcore.SetPageID('mmevents');
+		mmcore.CGRequest();
+	};
+	var isUserFired = function(attr) {
+		var userName = ($('#offCanvasDisplayName').html() || '');
+		if (userName != mmcore.GetCookie('mm_userName', 1)) {
+			mmcore.SetCookie('mm_FRSignUpConf_userName', userName, 0, 1);
+			mmcore.SetAction('FRSignUpConf', 1, attr);
+			request();
+		}
+	};
+
+	if (/m\.allrecipes\.com\/account\/signin\/\?/.test(location.href)) {
+		jQuery('.login-facebook a').on('click', function() {
+			mmcore.SetCookie('mm_login_fb_click', '1', 0, true);
+		});
+	}
+
+	if(/\/findfriends/.test(location.pathname) && mmcore.GetCookie('mm_login_fb_click', true)){
+		isUserFired('Facebook');
+		mmcore.SetCookie('mm_login_fb_click', '', -1, true);
+	} else if(/Free Registration Completed/i.test(unescape(location.search))){
+		isUserFired('Email');
+	}
+});
+}catch(err){mmcore.EH(err);}
+try{
+;(function() {
+	var isFullSiteByCookie = (mmcore.GetCookie('sitepref', true) == 'ar');
+	var isFullSiteByUrlParam = /\bsitepref\b=\bar\b/i.test(location.search);
+	var isTestDomain = ('allrecipes.com' == location.hostname);
+
+	if (isTestDomain && !isFullSiteByCookie && !isFullSiteByUrlParam) {
+		var times = 200;
+		var st = mmcore.snippets.Style('html, body { display: none !important; }');
+		(function waitForCriteria() {
+			if (mmcore.persCriteria.UserStatus && mmcore.persCriteria.DeviceType) {
+				mmcore._async = true;
+				mmcore.SetPageID('T06_MdotRedirect ID');
+				mmcore.CGRequest(function() {
+					setTimeout(st.detach, 0);
+				});
+			} else if(times--) {
+				setTimeout(waitForCriteria, 20);
+			} else {
+				st.detach();
+			}
+		})();
+	}
+})();
+
+}catch(err){mmcore.EH(err);}
+try{
+mmcore.AddDocLoadHandler(function () {
+});
+(function (campaign) {
+	var exit = campaign.exit || function () {
+			return mmcore._docEnd;
+		};
+	var style = mmcore.snippets.Style(campaign.hide + '{position:relative; left:-9999px}');
+	(function wait() {
+		if (campaign.check()) {
+			var m = mmcore;
+			m.HideMaxyboxes = function () {
+			};
+			m._async = true;
+			m.SetPageID(campaign.pageID);
+			m.CGRequest(function () {
+				m.AddDocLoadHandler(style.detach);
+			});
+		} else if (exit()) {
+			style.detach();
+		} else {
+			setTimeout(wait, 50);
+		}
+		setTimeout(style.detach, 5e3);
+	})();
+})({
+	hide: '.toprightmerch',
+	pageID: 'T04_Lozenge ID',
+	check: (function () {
+		//Preload images
+		var arrImg = [
+			'//service.maxymiser.net/cm/images-us/1/1/2/0959580CEBF242ADB18AD7D14D003796DB3AF6770D5CECBD69B2E1C60C661BF7/allrecipes-com/T04-Lozenge/V1_FreeRegistration.png',
+			'//service.maxymiser.net/cm/images-us/1/1/2/52DE4744A0C96FC1C53CC4672373236FC5020AC8D1C6DC787D5CDDF3D2C4545B/allrecipes-com/T04-Lozenge/V2_FreeTrial.png',
+			'//service.maxymiser.net/cm/images-us/1/1/2/1CFC080D4A2B86E6DD16B7F8074602092E5C801738329EDDAD9ACDDCD983FF75/allrecipes-com/T04-Lozenge/V3_ProMembership.png',
+			'//service.maxymiser.net/cm/images-us/1/1/2/3B20D73B1068ABC09C0E19D7CF159A6C7B03DA4E2CC0B05B0F86D83629F76119/allrecipes-com/T04-Lozenge/V4_CookingSchool.png'
+		];
+
+		for (var i = 0; i < arrImg.length; i++) {
+			new Image().src = arrImg[i];
+		}
+
+
+		return function () {
+			return document.querySelector('.toprightmerch > a > img') && window.jQuery && mmcore._docEnd;
+		}
+	}())
+
+});
+
+}catch(err){mmcore.EH(err);}
+try{
+/**
+* maxymiser.com
+*/
+(function () {
+	"use strict";
+
+	var executorVer = "1.9";
+	if (window.mmcore && window.mmcore.vcb && window.mmcore.vcb.executor && window.mmcore.vcb.executor.jsver >= executorVer) return;
+
+	window.mmcore = window.mmcore || (window.mmcore = {});
+	window.mmcore.vcb = window.mmcore.vcb || (window.mmcore.vcb = {});
+	window.mmcore.vcb.executor = {};
+	(function () {
+		var e = window.mmcore.vcb.selectorLib = function (b, a) {
+			return new e.prototype.init(b, a);
+		};
+		function merge(first, second) {
+			var i = first.length, j = 0;
+			if (typeof second.length === "number") {
+				for (var l = second.length; j < l; j++) {
+					first[i++] = second[j];
+				}
+			} else {
+				while (second[j] !== undefined) {
+					first[i++] = second[j++];
+				}
+			}
+			first.length = i;
+			return first;
+		}
+
+		function querySelectorAllIE(a, g) {
+			var b = g.styleSheets[0] || g.createStyleSheet(), c = g.all, d = [];
+			b.addRule(a, "x:o");
+			for (var i = 0; i < c.length; i++) {
+				c[i].currentStyle.x ? d.push(c[i]) : (function () {
+				} ());
+			}
+			b.removeRule(b.rules.length - 1);
+			var filteredResult = [];
+			for (var j = 0; j < d.length; j++) {
+				contains(d[j], this) && filteredResult.push(d[j]);
+			}
+			return filteredResult;
+		}
+		e.prototype = {
+			init: function (b, a) {
+				this.length = this.length || 0;
+				b = b.split(",");
+				var c, h = Array.prototype;
+				for (var n = 0; n < b.length; n++) {
+					for (var i = [], f, g = document, a = a || g.documentElement, d = b[n],
+							 filterElements = function (a, b, c) {
+							 	var d;
+							 	switch (a) {
+							 		case "eq":
+							 			d = b[0 > c ? b.length - 1 : c];
+							 			break;
+							 		case "lt":
+							 			d = h.slice.call(b, 0, c);
+							 			break;
+							 		case "gt":
+							 			d = h.slice.call(b, +c + 1, b.length);
+							 	}
+							 	return d;
+							 };
+						 f = d.match(/:(eq|gt|lt)\((-?\d*)\)/); ) {
+						c = d.indexOf(f[0]);
+						a = filterElements(f[1], e(d.substr(0, c), a), f[2]);
+						if (!a) {
+							return i;
+						}
+						d = d.substr(c + f[0].length);
+					}
+
+					if (d) {
+						i = (a.querySelectorAll) ? a.querySelectorAll(d) : querySelectorAllIE.call(a, d, g);
+					}
+					else {
+						i = (a[0] && a.tagName !== "FORM") ? a : [a];
+					}
+					if (typeof i === 'function') {
+						var obj = [];
+						for (var prop in i) {
+							if (i.hasOwnProperty(prop)) {
+								obj.push(i[prop]);
+							}
+						}
+						i = obj;
+					}
+					if (typeof this === "array") {
+						h.push.apply(this, i);
+					}
+					else {
+						merge(this, i);
+					}
+				}
+				return this;
+			},
+			addClass: function (b) {
+				for (var a = this.length, c, e = new RegExp("(^|\\s)" + b + "(\\s|$)", "g"); a--; ) {
+					c = this[a];
+					if (e.test(c.className)) {
+						break;
+					}
+					c.className = (c.className + " " + b).replace(/\s+/g, " ").replace(/(^ | $)/g, "");
+				}
+			}
+		};
+		e.prototype.init.prototype = e.prototype;
+		e.jsver = "1.2";
+
+		function parents(el) {
+			var arr = [];
+			while (el && el.nodeType === 1 && el.parentElement && el.parentElement.nodeType === 1) {
+				arr.push(el.parentElement);
+				el = el.parentElement;
+			}
+			return arr;
+		}
+
+		function contains(element, parent) {
+			if (element && parent && element.nodeType === 1 && parent.nodeType === 1) {
+				var pars = parents(element);
+				for (var i = 0; i < pars.length; i++) {
+					if (pars[i] === parent) {
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+	})();
+	window.mmcore.vcb.executor = (function () {
+		var pub,
+			constants = {
+				s: 'string',
+				u: 'undefined',
+				n: 'number',
+				nodeType: 1,
+				styleTagId: 'vcb-maxymiser-variant-tag-style-id' + (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1),
+				userGlobalStyleTagId: function () { return "vcb-maxymiser-user-global-style-tag-id" + (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1) },
+				actionTypes: {
+					attr: "attr",
+					insert: "insert",
+					remove: "remove",
+					html: "html",
+					index: "index",
+					clickAction: "clickAction"
+				},
+				actionArray: "actions",
+				markerModified: "vcb-was-modified-"
+			};
+		var bodyAlreadyShown = false;
+		pub = {
+			jsver: executorVer,
+			executeVariant: function (data) {
+				var actions = (data && data.actions) ? data.actions : [],
+					userScript = data ? data.userScript : null,
+					userStyle = data ? data.userStyle : null,
+					errorLog = "",
+					generateHideContentStyleTagId = function () { return "vcb-maxymiser-hide-content-tag-style-id_" + (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1) },
+					showHideContentStyleTagId = generateHideContentStyleTagId();
+
+				function deleteOldVcbHideStyles() {
+					var stylesToDelete = [],
+						allStyles = document.getElementsByTagName('style'),
+						allStylesLength = allStyles.length,
+						i;
+					if (allStylesLength > 0) {
+						for (i = 0; i < allStylesLength; i += 1) {
+							if (allStyles[i].id.match(/vcb-maxymiser-show-hide-content-tag-style-id/)) {
+								stylesToDelete.push(allStyles[i]);
+							}
+						}
+						for (i = 0; i < stylesToDelete.length; i += 1) {
+							stylesToDelete[i].parentNode.removeChild(stylesToDelete[i]);
+						}
+					}
+				}
+
+				function localCopyShowContent() {
+					pub.showContent(showHideContentStyleTagId);
+				}
+
+				function extractSelectors(actions) {
+					var selectors = [],
+						replacer = function (matcher, p1) { return p1 + " > "; };
+					for (var i = 0; i < actions.length; i++) {
+						if (actions[i].jsSelector && actions[i].type !== "clickAction") {
+							var actionSelector = actions[i].jsSelector;
+							var result = actionSelector.replace(/\*/gi, "");
+							result = result.replace(/:eq\(\s*\d+\s*\)/gi, "");
+							result = result.replace(/([^\\])\s+/gi, replacer);
+							selectors.push(result);
+						}
+					}
+					return selectors;
+				}
+
+				function execute(actions, isFirstTime) {
+					var missedActions = [], tagId;
+					if (actions instanceof Array && actions.length > 0) {
+						for (var i = 0; i < actions.length; i++) {
+							if (actions[i]) {
+								try {
+									if (!pub.executeAction(actions[i])) {
+										missedActions.push(actions[i]);
+										if (isFirstTime && actions[i].nodeIdentifier) {
+											tagId = generateHideContentStyleTagId();
+											actions[i].hideStyleTagId = tagId;
+											pub.hideContent(extractSelectors([actions[i]]), tagId);
+											window.setTimeout(function (t) { return function () { pub.showContent(t); }; } (tagId), 2000);
+										}
+									} else {
+										if (!isFirstTime && actions[i].hideStyleTagId) {
+											pub.showContent(actions[i].hideStyleTagId);
+										}
+									}
+								} catch (e) {
+									errorLog += ";Vcb variant exception in action with index " + i + ", name: " + actions[i].name + ", type: " + actions[i].type + ". Original error message: " + e.message;
+								}
+							}
+						}
+					}
+					return missedActions;
+				}
+
+				deleteOldVcbHideStyles();
+				this.applyUserGlobalStyles(userStyle);
+				var cssSelectors = extractSelectors(actions);
+				pub.hideContent(cssSelectors.join(", "), showHideContentStyleTagId);
+				setTimeout(localCopyShowContent, 3000);
+				if (window.mmcore && window.mmcore.AddDocLoadHandler) {
+					window.mmcore.AddDocLoadHandler(function () {
+						setTimeout(localCopyShowContent, 0);
+					});
+				}
+
+				window.mmcore.AddDocLoadHandler(function () {
+					if (bodyAlreadyShown) {
+						window.mmcore.vcb.vcb_error_log = window.mmcore.vcb.vcb_error_log || "";
+						window.mmcore.vcb.vcb_error_log += ";VCB variant has not been executed:Page content is shown;"
+					}
+					actions = execute(actions, true);
+					pub.executeCustomScript(userScript && userScript.customScript);
+					if (actions.length && data.jsver >= "1.1") {
+						var interval = window.setInterval(function () {
+							actions = execute(actions, false);
+							if (!actions.length) window.clearInterval(interval);
+						}, 200);
+					}
+					if (errorLog) {
+						window.mmcore.vcb.vcb_error_log = window.mmcore.vcb.vcb_error_log || "";
+						window.mmcore.vcb.vcb_error_log += errorLog;
+					}
+				});
+			},
+			executeAction: function (action) {
+				if (typeof action === 'object') {
+
+					if (action.type in constants.actionTypes) {
+						var arr = window.mmcore.vcb[constants.actionArray] || (window.mmcore.vcb[constants.actionArray] = []);
+						for (var i = 0; i < arr.length; i++) {
+							if (arr[i] === action) break;
+						}
+						if (i >= arr.length) arr.push(action);
+					}
+
+					switch (action.type) {
+						case constants.actionTypes.attr:
+							return executeActions.attr(action);
+
+						case constants.actionTypes.insert:
+							return executeActions.insert(action);
+
+						case constants.actionTypes.remove:
+							return executeActions.remove(action);
+
+						case constants.actionTypes.html:
+							return executeActions.html(action);
+
+						case constants.actionTypes.index:
+							return executeActions.index(action);
+
+						case constants.actionTypes.clickAction:
+							return executeActions.clickAction(action);
+					}
+				}
+			},
+			addStyle: function (style) {
+				if (typeof style === constants.s) {
+
+					var styleNode = document.createElement('style');
+					styleNode.type = "text/css";
+					styleNode.id = constants.styleTagId;
+					if (!!(window.attachEvent && !window.opera && styleNode.styleSheet)) {
+						styleNode.styleSheet.cssText = style;
+					} else {
+						var styleText = document.createTextNode(style);
+						styleNode.appendChild(styleText);
+					}
+					document.getElementsByTagName('head')[0].appendChild(styleNode);
+					return true;
+				} else {
+					return false;
+				}
+			},
+			hideContent: function (cssSelectorsToHide, styleTagId) {
+				if (!cssSelectorsToHide) return;
+				var checkStyleNode = document.getElementById(styleTagId);
+				var style = (cssSelectorsToHide === "body")
+					? "html body{position:relative; left:-10000px}"
+					: (cssSelectorsToHide + "{visibility: hidden !important;}");
+				if (checkStyleNode) {
+					bodyAlreadyShown = false;
+					return;
+				}
+				var styleNode = document.createElement('style');
+				styleNode.type = "text/css";
+				styleNode.id = styleTagId;
+				if (!!(window.attachEvent && !window.opera && styleNode.styleSheet)) {
+					styleNode.styleSheet.cssText = style;
+				} else {
+					var styleText = document.createTextNode(style);
+					styleNode.appendChild(styleText);
+				}
+				document.getElementsByTagName('head')[0].appendChild(styleNode);
+				bodyAlreadyShown = false;
+			},
+			showContent: function (styleTagId) {
+				bodyAlreadyShown = true;
+				var style = document.getElementById(styleTagId);
+				if (style) {
+					style.parentNode.removeChild(style);
+				}
+			},
+			findNode: function (selector) {
+				if (window.mmcore.vcb.selectorLib && typeof selector === constants.s) {
+					return window.mmcore.vcb.selectorLib(selector);
+				} else {
+					return false;
+				}
+			},
+			changeAttribute: function (node, attr, value) {
+				var result = false;
+				if (node) {
+					if (node.nodeType === constants.nodeType && typeof attr === constants.s && typeof value === constants.s) {
+						if (attr.toLowerCase() === "style") {
+							node.style.cssText = value;
+						}
+						if (node.nodeName.toLowerCase() === "img" && attr === 'src') {
+							node.style.visibility = "hidden";
+							node.src = value;
+							if (node.addEventListener) {
+								node.addEventListener('load', function () { node.style.visibility = "visible"; }, false);
+							}
+							else if (node.attachEvent) {
+								node.attachEvent('onload', function () { node.style.visibility = "visible"; });
+							}
+						}
+						else {
+							node.setAttribute(attr, value);
+						}
+						result = true;
+					}
+				}
+
+				return result;
+			},
+			removeNode: function (node) {
+				if (node && node.nodeType === constants.nodeType) {
+					node.parentNode.removeChild(node);
+					return true;
+				} else {
+					return false;
+				}
+			},
+			changeInnerHTML: function (node, innerHTML) {
+				if (node && node.nodeType === constants.nodeType && typeof innerHTML === constants.s) {
+					if (node.nodeName && node.nodeName.toLowerCase() == "style") {
+						if (!!(window.attachEvent && !window.opera && node.styleSheet)) {
+							node.styleSheet.cssText = innerHTML;
+						} else {
+							var styleText = document.createTextNode(innerHTML);
+							node.appendChild(styleText);
+						}
+					} else {
+						node.innerHTML = innerHTML;
+						return true;
+					}
+				} else {
+					return false;
+				}
+			},
+			createNode: function (nodeString) {
+				if (typeof nodeString === constants.s) {
+					var p = document.createElement('div');
+					p.innerHTML = nodeString;
+					var node = p.childNodes[0];
+					p = null;
+					return node;
+				} else {
+					return false;
+				}
+			},
+			insertNode: function (parentNode, node, index) {
+
+				function nodeIndex(node, nodes) {
+					for (var i = 0; i < nodes.length; i++) {
+						if (node === nodes[i]) {
+							return i;
+						}
+					}
+				}
+
+				if (!parentNode || !node || node.nodeType !== constants.nodeType || typeof index !== constants.n) {
+					return false;
+				}
+
+				var children = [];
+				for (var i = 0; i < parentNode.children.length; i++) {
+					var n = parentNode.children[i];
+					if (n.tagName != 'SCRIPT') {
+						children.push(n);
+					}
+				}
+
+				var noChildren = children.length == 0,
+					insertAfterLast = index >= children.length,
+					insertAsLast = index == children.length - 1,
+					alreadyExistsBeforeTarget = node.parentNode === parentNode && nodeIndex(node, children) < index;
+
+				if (noChildren || insertAfterLast || alreadyExistsBeforeTarget && insertAsLast) {
+					parentNode.appendChild(node);
+					return true;
+				}
+
+				if (alreadyExistsBeforeTarget && !insertAsLast) {
+					parentNode.insertBefore(node, children[index + 1]);
+					return true;
+				}
+
+				parentNode.insertBefore(node, children[index]);
+				return true;
+			},
+			executeCustomScript: function (script) {
+				if (!window.mmcore.vcb.userScript) {
+					window.mmcore.vcb.userScript = {
+						customScript: script
+					}
+				} else if (!window.mmcore.vcb.userScript.customScript) {
+					window.mmcore.vcb.userScript.customScript = script;
+				}
+				try {
+					eval(script);
+				}
+				catch (e) {
+					var message = "VCB Custom script error: \n" + e.message;
+					if (window.console) window.console.log(message);
+				}
+			},
+			applyUserGlobalStyles: function (userStyleString) {
+				window.mmcore.vcb.userStyle = userStyleString || "";
+				if (!userStyleString) return;
+				var styleNode = document.createElement('style');
+				styleNode.type = "text/css";
+				styleNode.id = constants.userGlobalStyleTagId();
+				if (!!(window.attachEvent && !window.opera && styleNode.styleSheet)) {
+					styleNode.styleSheet.cssText = userStyleString;
+				} else {
+					var styleText = document.createTextNode(userStyleString);
+					styleNode.appendChild(styleText);
+				}
+				document.getElementsByTagName('head')[0].appendChild(styleNode);
+			}
+		};
+		var executeActions = {
+			index: function (action) {
+				var result = false;
+				if (typeof action.jsSelector === constants.s) {
+					var n = window.mmcore.vcb.selectorLib(action.jsSelector);
+					if (n[0]) {
+						result = pub.insertNode(n[0].parentNode, n[0], action.index);
+						if (result) {
+							n.addClass(constants.markerModified + action.type);
+							if (typeof action.dataAttribute == constants.s && typeof action.nodeIdentifier == constants.s) {
+								pub.changeAttribute(n[0], action.dataAttribute, action.nodeIdentifier);
+							}
+						}
+					}
+				}
+				return result;
+			},
+			attr: function (action) {
+				var result = false;
+				if (action.jsSelector && typeof action.jsSelector === constants.s) {
+					var n = window.mmcore.vcb.selectorLib(action.jsSelector);
+					if (n[0]) {
+						result = pub.changeAttribute(n[0], action.name, action.value);
+						if (result) {
+							n.addClass(constants.markerModified + action.type);
+							if (typeof action.dataAttribute == constants.s && typeof action.nodeIdentifier == constants.s) {
+								pub.changeAttribute(n[0], action.dataAttribute, action.nodeIdentifier);
+							}
+						}
+					}
+				}
+				return result;
+			},
+			remove: function (action) {
+				var result = false;
+				if (action.jsSelector && typeof action.jsSelector === constants.s) {
+					var n = window.mmcore.vcb.selectorLib(action.jsSelector);
+					if (n[0]) {
+						result = pub.removeNode(n[0]);
+						if (result) {
+							n.addClass(constants.markerModified + action.type);
+							if (typeof action.dataAttribute == constants.s && typeof action.nodeIdentifier == constants.s) {
+								pub.changeAttribute(n[0], action.dataAttribute, action.nodeIdentifier);
+							}
+						}
+					}
+				}
+				return result;
+			},
+			html: function (action) {
+				var result = false;
+				if (action.jsSelector && typeof action.jsSelector === constants.s) {
+					var n = window.mmcore.vcb.selectorLib(action.jsSelector);
+					if (n[0]) {
+						result = pub.changeInnerHTML(n[0], action.value);
+						if (result) {
+							n.addClass(constants.markerModified + action.type);
+							if (typeof action.dataAttribute == constants.s && typeof action.nodeIdentifier == constants.s) {
+								pub.changeAttribute(n[0], action.dataAttribute, action.nodeIdentifier);
+							}
+						}
+					}
+				}
+				return result;
+			},
+			insert: function (action) {
+				var result;
+				if (action.jsSelector && typeof action.jsSelector === constants.s) {
+					var n = window.mmcore.vcb.selectorLib(action.jsSelector);
+					if (n[0]) {
+						var newNode = pub.createNode(action.value);
+						if (window.__VisualCampaignBuilder__ && newNode && action.isExternalContent) {
+							var hash = window.__VisualCampaignBuilder__.Core.utils.generateHash();
+							newNode.setAttribute("vcb-external-content-node-id", hash);
+						}
+						result = pub.insertNode(n[0], newNode, action.index);
+						if (result) {
+							n.addClass(constants.markerModified + action.type);
+							if (typeof action.dataAttribute == constants.s && typeof action.nodeIdentifier == constants.s) {
+								pub.changeAttribute(n[0], action.dataAttribute, action.nodeIdentifier);
+							}
+						}
+					}
+				}
+				return result;
+			},
+			clickAction: function (action) {
+				var result;
+				if (action.jsSelector && typeof action.jsSelector === constants.s) {
+					var n = window.mmcore.vcb.selectorLib(action.jsSelector);
+					if (n[0]) {
+						window.mmcore.vcb.Action(n[0]).set(action.actionName, action.actionValue || 1, action.actionAttribute || "", action.actionIdentifier);
+						result = true;
+						if (result) {
+							n.addClass(constants.markerModified + action.type);
+							if (typeof action.dataAttribute == constants.s && typeof action.nodeIdentifier == constants.s) {
+								pub.changeAttribute(n[0], action.dataAttribute, action.nodeIdentifier);
+							}
+						}
+					}
+				}
+				return result;
+			}
+		};
+
+		return pub;
+	} ());
+
+	(function (core, scope) {
+		scope.Action = function (node, options) {
+			options = options || {};
+			options.context = options.context || window;
+			var DATA_ATTR = "data-vcb-events-ref";
+			var request = function (callback) {
+				var callbackExecutor;
+				if (callback) {
+					callbackExecutor = function () {
+						try {
+							callback();
+						} catch (e) {
+							core.EH(e);
+						}
+						callbackExecutor = function () {
+						};
+					};
+					setTimeout(function () {
+						callbackExecutor();
+					}, 2000);
+				}
+				core._async = true;
+				core.SetPageID('events');
+				var pcs = core._vars && core._vars.uat;
+				core.CGRequest(callbackExecutor);
+				core._vars && (core._vars.uat = pcs);
+			};
+			var LinkType = function (targetLink) {
+				var linkHref = targetLink.href;
+				return {
+					hrefHasJS: function () {
+						return /^javascript:/i.test(linkHref);
+					},
+					sameSite: function () {
+						return core._Host(targetLink.hostname) === core._Host(location.hostname)/* && targetLink.hostname  === location.hostname*/;
+					},
+					notRequiresReload: function () {
+						return targetLink.target === "_blank" || /#|^javascript:void\(/i.test(linkHref);
+					}
+				}
+			};
+			var bind = function (node, type, fn) {
+				var listener = function (event) {
+					fn.call(node, event || window.event)
+				};
+				if (node.addEventListener) {
+					node.addEventListener(type, listener, false);
+				} else if (node.attachEvent) {
+					node.attachEvent("on" + type, listener);
+				}
+			};
+			var bindClickThrough = function (callback) {
+				if (!node[DATA_ATTR]) {
+					node[DATA_ATTR] = {
+						callbacks: []
+					};
+					bind(node, "click", function (event) {
+						var callbacks = this[DATA_ATTR].callbacks,
+							target = event.target || event.srcElement,
+							contains = function (arr, value) {
+								var i = arr.length;
+								while (i--) {
+									if (arr[i] === value) return true;
+								}
+								return false;
+							},
+							alreadyTriggeredOnTarget = function (actionName) {
+								if (target === this) {
+									return false;
+								} else {
+									return (typeof event.data == "string") && contains(event.data.split(","), actionName);
+								}
+							};
+						this[DATA_ATTR] = this[DATA_ATTR] || { callbacks: [] };
+						target[DATA_ATTR] = target[DATA_ATTR] || { callbacks: [] };
+						for (var i = 0; i < callbacks.length; i++) {
+							var arg = callbacks[i].call(this);
+							if (arg) {
+								var actionName = arg[0];
+								if (!alreadyTriggeredOnTarget.call(this, actionName)) {
+									core.$Action.apply(core, arg);
+									if (typeof event.data != "string") {
+										event.data = "";
+									}
+									var triggeredActions = (event.data == false) ? [] : event.data.split(",");
+									if (!contains(triggeredActions, actionName)) {
+										triggeredActions.push(actionName);
+										event.data = triggeredActions.join();
+									}
+								}
+							}
+						}
+						trackAction(event, this);
+					});
+				}
+				node[DATA_ATTR].callbacks.push(callback);
+			};
+			var callback = function (callback) {
+				bindClickThrough(callback);
+				return this;
+			};
+			var set = function (name, value, attr, guid) {
+				if (window.__VisualCampaignBuilder__) {
+					store(name, value, attr, guid);
+				} else {
+					bindClickThrough(function () {
+						return [name, value, attr]
+					});
+				}
+				return this;
+			};
+			var store = function (name, value, attr, guid) {
+				var arr = scope.clickActions || (scope.clickActions = []),
+					el = null;
+				for (var i = 0; i < arr.length; i++) {
+					if (arr[i].node === node) { el = arr[i]; break; }
+				}
+				if (!el) {
+					el = { node: node, actions: [] };
+					arr.push(el);
+				}
+				el.actions.push({
+					name: name,
+					value: value,
+					attr: attr,
+					guid: guid
+				});
+				return el;
+			};
+			var findLink = function (node) {
+				if (node.nodeName === "A") {
+					return node;
+				} else if (node.parentNode) {
+					return findLink(node.parentNode);
+				}
+				return false;
+			};
+			var trackAction = function (event, element) {
+				var targetLink = findLink(element),
+					nodeName = element.nodeName,
+					typeAttr = element.getAttribute("type"),
+					isSubmitButton = (nodeName == "INPUT" || nodeName == "BUTTON") && typeAttr && typeAttr.toLowerCase() == "submit";
+
+				if (targetLink) {
+					var linkType = LinkType(targetLink);
+					if (!linkType.sameSite()) {
+						event.preventDefault ? event.preventDefault() : event.returnValue = false;
+						request(function () {
+							if (linkType.hrefHasJS()) {
+								new Function(targetLink.href).call(window);
+							} else {
+								options.context.location.assign(targetLink.href);
+							}
+						});
+					} else if (linkType.notRequiresReload() || options.immediatelyAction) {
+						request();
+					}
+				} else if (!options.postponedAction && !isSubmitButton) {
+					request();
+				}
+			};
+			var getHandlers = function () {
+				return node[DATA_ATTR].callbacks;
+			};
+			scope.Action.bind = bind;
+			scope.Action.request = request;
+			return {
+				getHandlers: getHandlers,
+				callback: callback,
+				set: set,
+				store: store
+			}
+		};
+		scope.DomReady = function (handler) {
+			if (core && core.AddDocLoadHandler) {
+				core.AddDocLoadHandler(handler);
+			}
+		};
+		scope.setClickAction = function (selector, name, value, attr, guid) {
+			if (!selector || !name) return;
+			scope.DomReady(function () {
+				var node = scope.selectorLib(selector)[0];
+				if (node) {
+					scope.Action(node).set(name, value, attr, guid);
+				} else {
+					var interval = window.setInterval(function () {
+						node = scope.selectorLib(selector)[0];
+						if (node) {
+							scope.Action(node).set(name, value, attr, guid);
+							window.clearInterval(interval);
+						}
+					}, 199);
+				}
+			});
+		};
+	} (window.mmcore, window.mmcore.vcb));
+
+	if (window.mmcore._async) {
+		var backupHideMaxyboxes = window.mmcore.HideMaxyboxes;
+		window.mmcore.HideMaxyboxes = function () { };
+	}
+
+	window.setTimeout(function () {
+		var vcbMaxyboxes = [],
+			renderers = mmcore._renderers;
+		if (backupHideMaxyboxes) window.mmcore.HideMaxyboxes = backupHideMaxyboxes;
+		for (var n in renderers) {
+			if (renderers.hasOwnProperty(n) && renderers[n]
+				&& renderers[n].toString().indexOf("mmcore.vcb.executor.executeVariant") !== -1) {
+				vcbMaxyboxes.push(n);
+			}
+		}
+		if (vcbMaxyboxes.length) {
+			mmcore.RenderMaxyboxes(vcbMaxyboxes);
+		}
+	}, 0);
+
+} ());
+
+}catch(err){mmcore.EH(err);}
+try{
+mmcore.vcb.setClickAction("*#navmenu_social_gallery span:eq(0)","Newletters nav link","1","","7d8c4c77-87ac-68f1-22e1-9f8d262e27a9");
+
+}catch(err){mmcore.EH(err);}
+try{
+mmcore.vcb.setClickAction("*#accountSettingsForm .account-settings-wrapper:eq(0) .settings-wrapper:eq(3) .form-container:eq(0) div:eq(0) input:eq(0)","Set pg submit clk","1","","caad8095-35c8-ef50-c32b-e05078117b04");
+
+}catch(err){mmcore.EH(err);}
+mmcore._AddRenderer('Element15070',function(){var el=mmcore.GetMaxyboxNode('Element15070');var mm_inner_HTML='';try{
+
+mmcore.vcb.executor.executeVariant({"actions":[{"type":"html","name":"html","jsSelector":"*#navmenu_social_gallery span:eq(0)","date":1434568268116,"modMarker":"vcb-was-modified-html","nodeIdentifier":"data-vcb-node-identifier-42bd7b20-ba1c-c1e7-ae75-299e45e324fd","dataAttribute":"data-vcb-node-identifier-html","value":"Newsletters"},{"type":"attr","name":"href","jsSelector":"*#navmenu_social_gallery","date":1434568329683,"modMarker":"vcb-was-modified-attr","nodeIdentifier":"data-vcb-node-identifier-2d3a72eb-af6b-c197-a924-baba46743137","dataAttribute":"data-vcb-node-identifier-attr","value":"https://m.allrecipes.com/cook/my/account-settings/"},{"type":"html","name":"html","jsSelector":"body .slider-container:eq(0) .site-content:eq(0) .header:eq(0) .ng-scope:eq(0) .nav-tab:eq(2) .nav-tab__options:eq(0) li:eq(2)","date":1434736850758,"modMarker":"vcb-was-modified-html","nodeIdentifier":"data-vcb-node-identifier-f1dd77b2-5d06-bd82-1373-018d3df03d8d","dataAttribute":"data-vcb-node-identifier-html","value":"<a href=\"https://m.allrecipes.com/cook/my/account-settings/\" id=\"navmenu_social_gallery\" class=\"vcb-was-modified-attr\" data-vcb-node-identifier-attr=\"data-vcb-node-identifier-2d3a72eb-af6b-c197-a924-baba46743137\"><span class=\"vcb-was-modified-html\" data-vcb-node-identifier-html=\"data-vcb-node-identifier-42bd7b20-ba1c-c1e7-ae75-299e45e324fd\">Newsletters</span></a>"},{"type":"clickAction","jsSelector":"*#navmenu_social_gallery","actionName":"Newletters nav link","actionValue":"1","actionAttribute":"","actionIdentifier":"add4b3da-137e-059f-e9af-44bd77806be9"}],"userScript":{"customScript":""},"userStyle":"","jsver":"1.1"});
+
+}catch(err){mmcore.EH(err);}
+if(el && typeof el.innerHTML!='undefined')el.innerHTML=mm_inner_HTML;});mmcore.HideMaxyboxes('Element15070');mmcore._RenderOnLoad();if(typeof mmcore._callback=='object'&&typeof mmcore._callback[1]=='function'){try{mmcore._callback[1]();}catch(err){mmcore.EH(err);}
+finally{mmcore._callback[1]=null;}}
+})();
